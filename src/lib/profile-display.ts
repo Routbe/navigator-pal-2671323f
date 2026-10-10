@@ -739,6 +739,18 @@ export function backgroundLayers(
   }
 }
 
+/** Alleen de textuur (raster, ruis, dots, …) zonder basiskleur, om over een
+ * eigen achtergrond te leggen. `null` voor stijlen die een volledige achtergrond zijn. */
+export function textureLayer(
+  style: BackgroundStyle,
+  theme: { bg: string; border: string; accent?: string; card: string },
+): { backgroundImage: string; backgroundSize?: string } | null {
+  if (["gradient", "carbon", "stripes", "honeycomb"].includes(style)) return null;
+  const l = backgroundLayers(style, { ...theme, bg: "transparent" });
+  if (l.background === "transparent") return null;
+  return { backgroundImage: l.background.replace(/,\s*transparent$/, ""), backgroundSize: l.backgroundSize };
+}
+
 export const FONT_FAMILY: Record<Typography, string | undefined> = {
   sans: undefined,
   serif: "ui-serif, Georgia, 'Times New Roman', serif",
