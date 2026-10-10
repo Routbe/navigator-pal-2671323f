@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { requireAuth } from "@/lib/auth/middleware";
 import type { ReachSettings } from "@/lib/total-reach";
 
@@ -13,12 +14,22 @@ export const getReachSettings = createServerFn({ method: "GET" })
 
 export const updateReachSettings = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .inputValidator(
-    (input: {
-      showTotalReach?: boolean;
-      manualCount?: number | null;
-      accounts?: { id: string; autoSyncEnabled: boolean }[];
-    }) => input,
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        showTotalReach: z.boolean().optional(),
+        accounts: z
+          .array(
+            z.object({
+              provider: z.string().regex(/^[a-z0-9_]{2,32}$/),
+              includeInReach: z.boolean().optional(),
+              manualCount: z.number().int().min(0).max(2_000_000_000).nullable().optional(),
+            }),
+          )
+          .max(60)
+          .optional(),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { saveReachSettings } = await import("./total-reach.server");

@@ -3,24 +3,56 @@
  * getalformattering. Geen netwerk- of databasecode.
  */
 
-import type { SocialPlatform } from "./social-verify";
 
+/** Providers whose public API gives a follower/subscriber count. */
+export const AUTO_REACH_PROVIDERS = ["bluesky", "wsocial", "github", "youtube"] as const;
+/** Payment addresses have no audience and never count towards reach. */
+const NO_REACH = new Set(["lightning", "monero", "ethereum"]);
+
+export const isAutoReachProvider = (provider: string) =>
+  (AUTO_REACH_PROVIDERS as readonly string[]).includes(provider);
+export const countsTowardsReach = (provider: string) => !NO_REACH.has(provider);
+
+/** One connected Hub integration as shown in the reach modal. */
 export type ReachAccount = {
-  id: string;
-  platform: SocialPlatform;
-  username: string;
-  followerCount: number;
-  autoSyncEnabled: boolean;
+  provider: string;
+  handle: string;
+  /** Last automatically fetched count (null = never fetched / not available). */
+  followerCount: number | null;
+  /** User-typed count; wins over the fetched one. */
+  manualCount: number | null;
+  includeInReach: boolean;
+  auto: boolean;
   lastSyncedAt: string | null;
 };
 
 export type ReachSettings = {
   showTotalReach: boolean;
   totalReachCount: number;
-  manualCount: number | null;
   lastSyncedAt: string | null;
   accounts: ReachAccount[];
 };
+
+/** Count used for one account: manual override first, then the fetched value. */
+export const accountReach = (a: Pick<ReachAccount, "manualCount" | "followerCount">) =>
+  a.manualCount ?? a.followerCount ?? 0;
+
+/** Sum over included accounts only — never a placeholder. */
+export function sumReach(accounts: Pick<ReachAccount, "manualCount" | "followerCount" | "includeInReach">[]): number {
+  return accounts.filter((a) => a.includeInReach).reduce((t, a) => t + accountReach(a), 0);
+}
+
+/** "12.3K subscribers" / "1,234" → number, or null. */
+export function parseCompactCount(text: string): number | null {
+  const m = /(\d+(?:[.,]\d+)*)\s*([KMB])?/i.exec(text.replace(/\u00a0/g, " "));
+  if (!m) return null;
+  const unit = m[2]?.toUpperCase();
+  const raw = m[1]!;
+  const n = unit ? Number(raw.replace(",", ".")) : Number(raw.replace(/[.,]/g, ""));
+  if (!Number.isFinite(n)) return null;
+  const mult = unit === "K" ? 1e3 : unit === "M" ? 1e6 : unit === "B" ? 1e9 : 1;
+  return Math.round(n * mult);
+}
 
 /** 1200 -> "1.2K", 1050000 -> "1.05M", 980 -> "980". */
 export function formatReach(count: number | null | undefined): string {
