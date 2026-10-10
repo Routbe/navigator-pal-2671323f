@@ -8,7 +8,7 @@
  * Client-safe: geen server-imports.
  */
 
-import { BLOCK_KINDS } from "@/lib/profile";
+import { BLOCK_KINDS, wsocialHandle } from "@/lib/profile";
 
 /** Platform-specifieke extractieregels voor volledige geplakte URLs. */
 const PLATFORM_PATTERNS: Record<string, RegExp[]> = {
@@ -20,6 +20,7 @@ const PLATFORM_PATTERNS: Record<string, RegExp[]> = {
   facebook: [/facebook\.com\/([A-Za-z0-9_.]+)/i],
   linkedin: [/linkedin\.com\/(?:in|company)\/([A-Za-z0-9_-]+)/i],
   bluesky: [/bsky\.app\/profile\/([A-Za-z0-9_.-]+)/i],
+  wsocial: [/wsocial\.(?:eu|be)\/profile\/([A-Za-z0-9_.-]+)/i, /wsocial\.(?:eu|be)\/@?([A-Za-z0-9_.-]+)/i],
   spotify: [/open\.spotify\.com\/(?:user|artist)\/([A-Za-z0-9]+)/i],
   twitch: [/twitch\.tv\/([A-Za-z0-9_]+)/i],
   threads: [/threads\.(?:net|com)\/@?([A-Za-z0-9_.]+)/i],
@@ -37,6 +38,7 @@ const PLATFORM_PATTERNS: Record<string, RegExp[]> = {
 
 /** Het zichtbare prefix in het invoerveld, bv. `instagram.com/`. */
 export function handlePrefix(kind: string): string | null {
+  if (kind === "wsocial") return "@";
   const def = BLOCK_KINDS.find((k) => k.kind === kind);
   if (!def?.base) return null;
   return def.base.replace(/^https?:\/\//, "");
@@ -83,7 +85,7 @@ export function socialUrl(kind: string, handle: string): string {
   const def = BLOCK_KINDS.find((k) => k.kind === kind);
   const clean = normalizeSocialHandle(handle);
   if (!def?.base || !clean) return "";
-  return `${def.base}${clean}`;
+  return `${def.base}${kind === "wsocial" ? wsocialHandle(clean) : clean}`;
 }
 
 /** Platformspecifieke handleregels voor inline validatie. */

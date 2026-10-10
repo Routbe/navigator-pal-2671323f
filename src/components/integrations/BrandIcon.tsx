@@ -17,7 +17,12 @@ const CUSTOM: Record<string, { path: string; hex: string }> = {
   },
 };
 
+/** Logos shipped as local files (never hotlinked). */
+const LOCAL: Record<string, string> = { wsocial: "/icons/wsocial.png" };
+
 export function BrandIcon({ icon, className = "h-6 w-6" }: { icon: string | null; className?: string }) {
+  const local = icon?.startsWith("custom:") ? LOCAL[icon.slice(7)] : undefined;
+  if (local) return <img src={local} alt="" aria-hidden className={`${className} rounded-[22%] object-contain`} />;
   const si = !icon
     ? null
     : icon.startsWith("custom:")

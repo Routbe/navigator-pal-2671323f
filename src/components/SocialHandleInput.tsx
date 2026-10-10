@@ -76,6 +76,9 @@ export function SocialHandleInput({
           onChange={(e) => onChange(normalizeSocialHandle(extractHandle(kind, e.target.value)))}
           className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
+        {kind === "wsocial" && normalized && !normalized.includes(".") && (
+          <span className="shrink-0 font-mono text-[11px] text-muted-foreground">.wsocial.eu</span>
+        )}
       </div>
 
       {error ? (
