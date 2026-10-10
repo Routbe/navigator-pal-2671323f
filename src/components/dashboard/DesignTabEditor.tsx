@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { hexToHsl, hslToHex } from "@/lib/color-hsl";
 import { themeOf } from "@/lib/profile";
 import {
   BUTTON_RADII,
@@ -46,6 +47,50 @@ type SetPref = <K extends keyof ProfileDisplayPrefs>(
 /** Knopafronding in px, voor de previewtegels. */
 export const radiusPx = (id: ProfileDisplayPrefs["buttonRadius"] | undefined) =>
   (BUTTON_RADII.find((r) => r.id === id) ?? BUTTON_RADII[2]!).px;
+
+/** Kleurkiezer met tint-, verzadiging- en helderheidsschuifjes; slaat hex op. */
+function AdvancedColorField({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string | null;
+  onChange: (v: string | null) => void;
+  placeholder?: string;
+}) {
+  const hsl = hexToHsl(value ?? placeholder ?? "#111111") ?? { h: 0, s: 0, l: 7 };
+  const set = (k: "h" | "s" | "l", n: number) => onChange(hslToHex({ ...hsl, [k]: n }));
+  const rows: { k: "h" | "s" | "l"; label: string; max: number; track: string }[] = [
+    { k: "h", label: "Tint", max: 360, track: "linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)" },
+    { k: "s", label: "Verzadiging", max: 100, track: `linear-gradient(90deg,${hslToHex({ ...hsl, s: 0 })},${hslToHex({ ...hsl, s: 100 })})` },
+    { k: "l", label: "Helderheid", max: 100, track: `linear-gradient(90deg,#000,${hslToHex({ ...hsl, l: 50 })},#fff)` },
+  ];
+  return (
+    <div className="space-y-3">
+      <ColorField label={label} value={value} onChange={onChange} placeholder={placeholder} />
+      {rows.map((r) => (
+        <label key={r.k} className="block space-y-1">
+          <span className="flex justify-between text-[11px] text-muted-foreground">
+            <span>{r.label}</span>
+            <span className="font-mono">{hsl[r.k]}{r.k === "h" ? "°" : "%"}</span>
+          </span>
+          <input
+            type="range"
+            min={0}
+            max={r.max}
+            value={hsl[r.k]}
+            aria-label={r.label}
+            onChange={(e) => set(r.k, Number(e.target.value))}
+            className="h-2 w-full cursor-pointer appearance-none rounded-full accent-foreground"
+            style={{ background: r.track }}
+          />
+        </label>
+      ))}
+    </div>
+  );
+}
 
 function ColorField({
   label,
@@ -303,11 +348,11 @@ export function DesignWallpaperSection({
         ))}
       </div>
 
-      {prefs.wallpaperType === "solid" && (
+      {(prefs.wallpaperType === "solid" || prefs.wallpaperType === "mesh-flow" || prefs.wallpaperType === "grid-scroll" || prefs.wallpaperType === "fluid-wave") && (
         <>
           {/* Eén bron voor de vlakke achtergrondkleur: dezelfde `canvasColor`
               als in 🎨 Thema & Kleurenschema, geen tweede kleurveld meer. */}
-          <ColorField
+          <AdvancedColorField
             label="Achtergrondkleur"
             value={prefs.canvasColor ?? prefs.wallpaperColor}
             onChange={(v) => {
