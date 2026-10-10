@@ -29,3 +29,4 @@
 - Vercel builds use nitro's `vercel` preset (auto via `VERCEL`); the sandbox forces cloudflare, so test with sandbox env vars unset.
 - Third-party images on public pages load only via `/api/public/proxy-image` (host allowlist in `src/lib/image-proxy-rules.ts`). Why: visitors' IPs must never reach third-party image hosts.
 - Hub connections live in `user_integrations` (db/73) with a per-row Pro/Social/Both audience; `verified` is set only server-side when the handle matches a sign-in identity. Why: typed handles must never look proven.
+- Total reach is summed only from Connections Hub rows (`user_integrations`, db/74): open platforms auto-fetch, others use a per-integration manual count; never social_links or placeholders. Why: the number must reflect what the member actually connected.

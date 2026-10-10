@@ -55,7 +55,7 @@ export function TotalReachModal({
     };
   }, [open]);
 
-  async function persist(patch: Parameters<typeof updateReachSettings>[0]["data"]) {
+  async function persist(patch: { showTotalReach?: boolean; accounts?: { provider: string; includeInReach?: boolean; manualCount?: number | null }[] }) {
     setBusy(true);
     try {
       const next = await updateReachSettings({ data: patch });
