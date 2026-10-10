@@ -246,12 +246,13 @@ export function IntegrationsAccordion() {
                         }}
                       />
                     </label>
-                    <button type="button" onClick={() => void unlink(item)} disabled={busy === item.id} className="text-[11px] text-muted-foreground underline">
+                    <button type="button" onClick={() => void unlink(item)} disabled={busy === item.id} className="inline-flex h-8 w-full items-center justify-center rounded-lg border border-border text-xs font-medium hover:bg-muted">
                       Ontkoppelen
                     </button>
                   </div>
                 ) : connected && row ? (
                   <div className="space-y-2">
+                    <p className="truncate font-mono text-[11px] text-muted-foreground">Opgeslagen: {item.mode === "address" ? row.handle : `@${row.handle.replace(/^@/, "")}`}</p>
                     <AudiencePicker
                       value={row.audience}
                       disabled={busy === item.id}
@@ -266,7 +267,7 @@ export function IntegrationsAccordion() {
                         onCheckedChange={(v) => void persist(item, { handle: row.handle, audience: row.audience, visible: v, useSso: row.verified })}
                       />
                     </label>
-                    <button type="button" onClick={() => void unlink(item)} disabled={busy === item.id} className="text-[11px] text-muted-foreground underline">
+                    <button type="button" onClick={() => void unlink(item)} disabled={busy === item.id} className="inline-flex h-8 w-full items-center justify-center rounded-lg border border-border text-xs font-medium hover:bg-muted">
                       Ontkoppelen
                     </button>
                   </div>
@@ -278,14 +279,18 @@ export function IntegrationsAccordion() {
                       void submit(item);
                     }}
                   >
+                    <div className="flex h-8 items-center rounded-lg border border-border bg-background px-2">
+                    {item.mode === "handle" && item.id !== "youtube" && <span className="text-xs text-muted-foreground" aria-hidden>@</span>}
                     <input
                       autoFocus
                       value={value}
                       onChange={(e) => setValue(e.target.value)}
                       placeholder={item.placeholder}
                       aria-label={`${item.label} ${item.mode === "address" ? "adres" : "gebruikersnaam"}`}
-                      className="h-8 w-full min-w-0 rounded-lg border border-border bg-background px-2 text-xs"
+                      className="h-full w-full min-w-0 bg-transparent px-1 text-xs outline-none"
                     />
+                    {item.id === "wsocial" && value && !value.includes(".") && <span className="shrink-0 font-mono text-[10px] text-muted-foreground">.wsocial.eu</span>}
+                    </div>
                     {item.mode === "address" && (
                       <p className="text-[10px] text-muted-foreground">Alleen je publieke adres — nooit een sleutel of herstelzin.</p>
                     )}
