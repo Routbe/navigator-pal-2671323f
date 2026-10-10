@@ -5,7 +5,9 @@ import { EXTRA_FOOTER_STYLES, extraFooterCss, type ExtraFooterStyle } from "@/li
  * (zie `profile-display.ts`), zodat er geen migratie nodig is per knopje.
  */
 
-export type WallpaperType = "theme" | "solid" | "gradient" | "image";
+export type WallpaperType = "theme" | "solid" | "gradient" | "image" | "mesh-flow" | "grid-scroll" | "fluid-wave";
+
+export const ANIMATED_WALLPAPERS: readonly WallpaperType[] = ["mesh-flow", "grid-scroll", "fluid-wave"];
 export type ButtonVariant =
   | "fill"
   | "outline"
@@ -659,6 +661,9 @@ export const WALLPAPER_TYPES: { id: WallpaperType; label: string }[] = [
   { id: "solid", label: "Effen kleur" },
   { id: "gradient", label: "Gradient" },
   { id: "image", label: "Eigen afbeelding" },
+  { id: "mesh-flow", label: "Vloeiend mesh" },
+  { id: "grid-scroll", label: "Scrollend raster" },
+  { id: "fluid-wave", label: "Golvend weefsel" },
 ];
 
 /* ------------------------------------------------------------- styles */
@@ -671,6 +676,7 @@ export function wallpaperStyle(
   if (!(d.backgroundCustom || d.customDesign) || d.wallpaperType === "theme") return null;
   if (d.wallpaperType === "solid") return { background: d.wallpaperColor ?? theme.bg };
   if (d.wallpaperType === "gradient") return { background: gradientCss(d.wallpaperGradient, d.wallpaperGradientDirection) };
+  if (ANIMATED_WALLPAPERS.includes(d.wallpaperType)) return { background: d.wallpaperColor ?? theme.bg };
   if (d.wallpaperType === "image" && d.wallpaperImageUrl) {
     // De afbeelding zelf komt in een eigen laag binnen de pagina
     // (`wallpaperImageLayerStyle`), zodat blur nooit buiten het profiel lekt.
@@ -810,7 +816,7 @@ export function normalizeDesignPrefs(r: Record<string, unknown>): ProfileDesignP
     typographyCustom: r["typographyCustom"] === undefined ? Boolean(r["customDesign"]) : Boolean(r["typographyCustom"]),
     wallpaperType: pick(
       r["wallpaperType"],
-      ["theme", "solid", "gradient", "image"] as const,
+      ["theme", "solid", "gradient", "image", "mesh-flow", "grid-scroll", "fluid-wave"] as const,
       "theme",
     ),
     wallpaperColor: hex(r["wallpaperColor"]),

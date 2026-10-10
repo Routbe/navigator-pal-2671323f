@@ -54,6 +54,7 @@ import type { BadgeType } from "@/lib/profile-display";
 import { EarlyBelieverBadge } from "@/components/profile/EarlyBelieverBadge";
 import {
   backgroundLayers,
+  textureLayer,
   bannerStyleOf,
   blockButtonStyle,
   FONT_FAMILY,
@@ -71,6 +72,7 @@ import {
   wallpaperImageLayerStyle,
   wallpaperOverlayStyle,
   wallpaperStyle,
+  ANIMATED_WALLPAPERS,
   avatarShapeStyle,
 } from "@/lib/profile-display";
 import {
@@ -149,7 +151,12 @@ export function ProfileView({
     border: prefs.patternColor ?? t.border,
     accent: prefs.patternColor ?? t.accent,
   };
-  const surface = wallpaperStyle(prefs, canvas) ?? backgroundLayers(prefs.backgroundStyle, canvas);
+  const wallpaper = wallpaperStyle(prefs, canvas);
+  const surface = wallpaper ?? backgroundLayers(prefs.backgroundStyle, canvas);
+  /** Textuur (raster, ruis, …) bovenop een eigen achtergrond i.p.v. eronder te verdwijnen. */
+  const texture = wallpaper ? textureLayer(prefs.backgroundStyle, canvas) : null;
+  const animated = wallpaper && ANIMATED_WALLPAPERS.includes(prefs.wallpaperType) ? prefs.wallpaperType : null;
+  const animAccent = canvas.accent ?? canvas.border;
   const imageLayer = wallpaperImageLayerStyle(prefs);
   const overlay = wallpaperOverlayStyle(prefs);
   const banner = bannerStyleOf(prefs, t);
@@ -295,6 +302,16 @@ export function ProfileView({
       )}
       {overlay && (
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10" style={overlay} />
+      )}
+      {animated && (
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-anim-${animated}`}
+          style={{ ["--anim-a" as string]: animAccent, ["--anim-b" as string]: canvas.card, ["--anim-c" as string]: canvas.border }}
+        />
+      )}
+      {texture && (
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10" style={texture} />
       )}
       {layers.backgrounds
         .filter((b) => b.visible)

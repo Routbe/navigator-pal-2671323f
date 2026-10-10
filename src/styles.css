@@ -921,3 +921,47 @@ select:focus-visible {
 .now-playing-bars i:nth-child(3) { animation-delay: -0.6s; }
 @keyframes np-bar { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
 @media (prefers-reduced-motion: reduce) { .now-playing-bars i { animation: none; } }
+
+/* Geanimeerde profielachtergronden (kleuren via --anim-a/b/c). */
+.bg-anim-mesh-flow::before, .bg-anim-mesh-flow::after {
+  content: ""; position: absolute; inset: -30%;
+  background:
+    radial-gradient(35% 35% at 25% 30%, color-mix(in oklab, var(--anim-a) 55%, transparent), transparent 70%),
+    radial-gradient(30% 30% at 75% 60%, color-mix(in oklab, var(--anim-b) 80%, transparent), transparent 70%);
+  filter: blur(40px); animation: bg-mesh 18s ease-in-out infinite alternate;
+}
+.bg-anim-mesh-flow::after {
+  background: radial-gradient(32% 32% at 50% 80%, color-mix(in oklab, var(--anim-a) 35%, transparent), transparent 70%);
+  animation-duration: 24s; animation-direction: alternate-reverse;
+}
+@keyframes bg-mesh {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  50% { transform: translate(8%, -6%) rotate(40deg) scale(1.1); }
+  100% { transform: translate(-6%, 8%) rotate(90deg) scale(0.95); }
+}
+.bg-anim-grid-scroll::before {
+  content: ""; position: absolute; inset: -60px 0 0 0;
+  background:
+    linear-gradient(color-mix(in oklab, var(--anim-c) 70%, transparent) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, color-mix(in oklab, var(--anim-c) 70%, transparent) 1px, transparent 1px) 0 0 / 40px 40px;
+  mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 70%, transparent);
+  animation: bg-grid 6s linear infinite;
+}
+@keyframes bg-grid { from { transform: translateY(40px); } to { transform: translateY(0); } }
+.bg-anim-fluid-wave::before, .bg-anim-fluid-wave::after {
+  content: ""; position: absolute; left: -50%; width: 200%; height: 70%; bottom: -20%;
+  border-radius: 45%;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--anim-a) 40%, transparent), transparent 80%);
+  animation: bg-wave 16s linear infinite;
+}
+.bg-anim-fluid-wave::after {
+  bottom: -28%; border-radius: 42%;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--anim-b) 70%, transparent), transparent 80%);
+  animation-duration: 22s; animation-direction: reverse;
+}
+@keyframes bg-wave { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .bg-anim-mesh-flow::before, .bg-anim-mesh-flow::after,
+  .bg-anim-grid-scroll::before,
+  .bg-anim-fluid-wave::before, .bg-anim-fluid-wave::after { animation: none; }
+}
