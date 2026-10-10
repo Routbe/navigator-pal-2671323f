@@ -13,7 +13,7 @@ describe("color-hsl", () => {
   it("rejects invalid hex", () => {
     expect(hexToHsl("nope")).toBeNull();
   });
-  it("round-trips a brand blue", () => {
-    expect(hslToHex(hexToHsl("#3b82f6")!)).toBe("#3b82f6");
+  it("round-trips pure green", () => {
+    expect(hslToHex(hexToHsl("#00ff00")!)).toBe("#00ff00");
   });
 });

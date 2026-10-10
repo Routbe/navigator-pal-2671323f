@@ -5,7 +5,7 @@ const theme = { bg: "#000000", border: "#333333", card: "#111111", accent: "#ff0
 
 describe("textureLayer", () => {
   it("returns a transparent grid overlay without the base colour", () => {
-    const t = textureLayer("grid", theme)!;
+    const t = textureLayer("grid", theme)!.backgroundImage;
     expect(t).toContain("linear-gradient");
     expect(t).not.toContain("#000000");
   });
