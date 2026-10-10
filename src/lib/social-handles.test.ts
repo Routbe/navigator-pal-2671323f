@@ -102,7 +102,8 @@ describe("socialUrl", () => {
   });
 
   it("geeft een lege string voor platformen zonder base", () => {
-    expect(socialUrl("wsocial", "jona")).toBe("");
+    expect(socialUrl("wsocial", "jdelplanche")).toBe("https://wsocial.eu/profile/jdelplanche.wsocial.eu");
+    expect(socialUrl("wsocial", "jona.com")).toBe("https://wsocial.eu/profile/jona.com");
   });
 });
 
@@ -112,8 +113,9 @@ describe("handlePrefix & isHandleBlock", () => {
   });
 
   it("geeft null voor blokken zonder base", () => {
-    expect(handlePrefix("wsocial")).toBeNull();
-    expect(isHandleBlock("wsocial")).toBe(false);
+    expect(handlePrefix("wsocial")).toBe("@");
+    expect(isHandleBlock("wsocial")).toBe(true);
+    expect(isHandleBlock("signal")).toBe(false);
     expect(isHandleBlock("instagram")).toBe(true);
   });
 });

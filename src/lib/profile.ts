@@ -350,9 +350,10 @@ export const BLOCK_KINDS: {
   },
   {
     kind: "wsocial",
-    label: "Wsocial",
+    label: "W.social",
     category: "featured",
-    placeholder: "https://wsocial.be/jona",
+    placeholder: "@gebruikersnaam",
+    base: "https://wsocial.eu/profile/",
   },
   {
     kind: "mastodon",
@@ -1186,12 +1187,21 @@ export function handleIssue(h: string, ctx: HandleRuleContext = {}): string | nu
 }
 
 /** Resolves a block value (handle, phone, e-mail or full URL) to an href. */
+/** W.social (AT Protocol): bare names get `.wsocial.eu`; custom domains stay as typed. */
+export function wsocialHandle(raw: string): string {
+  const h = raw.trim().replace(/^@+/, "").toLowerCase();
+  if (!h) return "";
+  return h.includes(".") ? h : `${h}.wsocial.eu`;
+}
+
 export function blockHref(block: ProfileBlock): string {
   const raw = block.value.trim();
   if (!raw) return "";
   if (/^(https?:|mailto:|tel:)/i.test(raw)) return raw;
 
   switch (block.kind) {
+    case "wsocial":
+      return `https://wsocial.eu/profile/${wsocialHandle(raw)}`;
     case "email":
       return `mailto:${raw}`;
     case "lightning":
