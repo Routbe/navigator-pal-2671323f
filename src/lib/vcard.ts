@@ -134,7 +134,7 @@ export function buildVCard(input: VCardInput): string {
     `NICKNAME:${esc(input.handle)}`,
     `URL:${esc(input.profileUrl)}`,
     ...(input.email ? [`EMAIL;TYPE=INTERNET:${esc(input.email)}`] : []),
-    ...phones.map((p) => `TEL;TYPE=${p.type.toUpperCase()}${p.type === "cell" ? ",VOICE" : ""}:${esc(p.number.trim())}`),
+    ...phones.map((p) => `TEL;TYPE=${p.type.toUpperCase()}:${esc(p.number.trim())}`),
     ...(input.org?.trim() ? [`ORG:${esc(input.org.trim())}`] : []),
     ...(input.title?.trim() ? [`TITLE:${esc(input.title.trim())}`] : []),
     ...(input.address?.trim() ? [`ADR;TYPE=WORK:;;${esc(input.address.trim())};;;;`] : []),

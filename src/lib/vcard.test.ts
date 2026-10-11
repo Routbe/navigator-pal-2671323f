@@ -14,7 +14,7 @@ describe("vCard component", () => {
     });
     expect(v).toContain("TITLE:Founder");
     expect(v).toContain("TEL;TYPE=WORK:+32 2 000 00 00");
-    expect(v).toContain("TEL;TYPE=CELL,VOICE:+32 470 00 00 00");
+    expect(v).toContain("TEL;TYPE=CELL:+32 470 00 00 00");
     expect(v).toContain("TEL;TYPE=HOME:011");
     expect(v).toContain("ADR;TYPE=WORK:;;Grote Markt 1\\, Brussel;;;;");
     expect(v).toContain("BDAY:1990-05-04");
