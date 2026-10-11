@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Ambient Weer: settings, private Pro webhook, cached weather and live atmospheric overlay
 - [x] Neon database updates (all applied)
 - [x] Neon connection card linked
 - [ ] Separate app login (rout_app) for DATABASE_URL — waiting on the user
