@@ -98,6 +98,7 @@ import { Route as ApiPublicHealthRouteImport } from './routes/api_.public.health
 import { Route as ApiPublicIntegrationsRouteImport } from './routes/api_.public.integrations'
 import { Route as ApiPublicProxyImageRouteImport } from './routes/api_.public.proxy-image'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api_.public.stripe-webhook'
+import { Route as ApiPublicWeatherRouteImport } from './routes/api_.public.weather'
 import { Route as ApiSpotifyStartRouteImport } from './routes/api_.spotify.start'
 import { Route as AuthMastodonCallbackRouteImport } from './routes/auth_.mastodon.callback'
 import { Route as RUAliasRouteImport } from './routes/r.u.$alias'
@@ -127,6 +128,7 @@ import { Route as ApiPublicOgHandleRouteImport } from './routes/api_.public.og.$
 import { Route as ApiPublicQrUploadRouteImport } from './routes/api_.public.qr.upload'
 import { Route as ApiPublicSessionLogoutRouteImport } from './routes/api_.public.session.logout'
 import { Route as ApiPublicSpotifyCallbackRouteImport } from './routes/api_.public.spotify.callback'
+import { Route as ApiPublicWeatherWebhookTokenRouteImport } from './routes/api_.public.weather-webhook.$token'
 import { Route as ApiPublicWebhooksBankingRouteImport } from './routes/api_.public.webhooks.banking'
 import { Route as AuthenticatedConsoleAppsAppIdIndexRouteImport } from './routes/_authenticated/console.apps.$appId.index'
 import { Route as AuthenticatedConsoleAppsAppIdAdvancedRouteImport } from './routes/_authenticated/console.apps.$appId.advanced'
@@ -602,6 +604,11 @@ const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   path: '/api/public/stripe-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWeatherRoute = ApiPublicWeatherRouteImport.update({
+  id: '/api_/public/weather',
+  path: '/api/public/weather',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSpotifyStartRoute = ApiSpotifyStartRouteImport.update({
   id: '/api_/spotify/start',
   path: '/api/spotify/start',
@@ -758,6 +765,12 @@ const ApiPublicSpotifyCallbackRoute =
   ApiPublicSpotifyCallbackRouteImport.update({
     id: '/api_/public/spotify/callback',
     path: '/api/public/spotify/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicWeatherWebhookTokenRoute =
+  ApiPublicWeatherWebhookTokenRouteImport.update({
+    id: '/api_/public/weather-webhook/$token',
+    path: '/api/public/weather-webhook/$token',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicWebhooksBankingRoute =
@@ -939,6 +952,7 @@ export interface FileRoutesByFullPath {
   '/api/public/integrations': typeof ApiPublicIntegrationsRoute
   '/api/public/proxy-image': typeof ApiPublicProxyImageRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
+  '/api/public/weather': typeof ApiPublicWeatherRoute
   '/api/spotify/start': typeof ApiSpotifyStartRoute
   '/auth/mastodon/callback': typeof AuthMastodonCallbackRoute
   '/r/u/$alias': typeof RUAliasRoute
@@ -968,6 +982,7 @@ export interface FileRoutesByFullPath {
   '/api/public/qr/upload': typeof ApiPublicQrUploadRoute
   '/api/public/session/logout': typeof ApiPublicSessionLogoutRoute
   '/api/public/spotify/callback': typeof ApiPublicSpotifyCallbackRoute
+  '/api/public/weather-webhook/$token': typeof ApiPublicWeatherWebhookTokenRoute
   '/api/public/webhooks/banking': typeof ApiPublicWebhooksBankingRoute
   '/console/apps/': typeof AuthenticatedConsoleAppsIndexRoute
   '/console/apps/$appId/advanced': typeof AuthenticatedConsoleAppsAppIdAdvancedRoute
@@ -1070,6 +1085,7 @@ export interface FileRoutesByTo {
   '/api/public/integrations': typeof ApiPublicIntegrationsRoute
   '/api/public/proxy-image': typeof ApiPublicProxyImageRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
+  '/api/public/weather': typeof ApiPublicWeatherRoute
   '/api/spotify/start': typeof ApiSpotifyStartRoute
   '/auth/mastodon/callback': typeof AuthMastodonCallbackRoute
   '/r/u/$alias': typeof RUAliasRoute
@@ -1098,6 +1114,7 @@ export interface FileRoutesByTo {
   '/api/public/qr/upload': typeof ApiPublicQrUploadRoute
   '/api/public/session/logout': typeof ApiPublicSessionLogoutRoute
   '/api/public/spotify/callback': typeof ApiPublicSpotifyCallbackRoute
+  '/api/public/weather-webhook/$token': typeof ApiPublicWeatherWebhookTokenRoute
   '/api/public/webhooks/banking': typeof ApiPublicWebhooksBankingRoute
   '/console/apps': typeof AuthenticatedConsoleAppsIndexRoute
   '/console/apps/$appId/advanced': typeof AuthenticatedConsoleAppsAppIdAdvancedRoute
@@ -1205,6 +1222,7 @@ export interface FileRoutesById {
   '/api_/public/integrations': typeof ApiPublicIntegrationsRoute
   '/api_/public/proxy-image': typeof ApiPublicProxyImageRoute
   '/api_/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
+  '/api_/public/weather': typeof ApiPublicWeatherRoute
   '/api_/spotify/start': typeof ApiSpotifyStartRoute
   '/auth_/mastodon/callback': typeof AuthMastodonCallbackRoute
   '/r/u/$alias': typeof RUAliasRoute
@@ -1234,6 +1252,7 @@ export interface FileRoutesById {
   '/api_/public/qr/upload': typeof ApiPublicQrUploadRoute
   '/api_/public/session/logout': typeof ApiPublicSessionLogoutRoute
   '/api_/public/spotify/callback': typeof ApiPublicSpotifyCallbackRoute
+  '/api_/public/weather-webhook/$token': typeof ApiPublicWeatherWebhookTokenRoute
   '/api_/public/webhooks/banking': typeof ApiPublicWebhooksBankingRoute
   '/_authenticated/console/apps/': typeof AuthenticatedConsoleAppsIndexRoute
   '/_authenticated/console/apps/$appId/advanced': typeof AuthenticatedConsoleAppsAppIdAdvancedRoute
@@ -1341,6 +1360,7 @@ export interface FileRouteTypes {
     | '/api/public/integrations'
     | '/api/public/proxy-image'
     | '/api/public/stripe-webhook'
+    | '/api/public/weather'
     | '/api/spotify/start'
     | '/auth/mastodon/callback'
     | '/r/u/$alias'
@@ -1370,6 +1390,7 @@ export interface FileRouteTypes {
     | '/api/public/qr/upload'
     | '/api/public/session/logout'
     | '/api/public/spotify/callback'
+    | '/api/public/weather-webhook/$token'
     | '/api/public/webhooks/banking'
     | '/console/apps/'
     | '/console/apps/$appId/advanced'
@@ -1472,6 +1493,7 @@ export interface FileRouteTypes {
     | '/api/public/integrations'
     | '/api/public/proxy-image'
     | '/api/public/stripe-webhook'
+    | '/api/public/weather'
     | '/api/spotify/start'
     | '/auth/mastodon/callback'
     | '/r/u/$alias'
@@ -1500,6 +1522,7 @@ export interface FileRouteTypes {
     | '/api/public/qr/upload'
     | '/api/public/session/logout'
     | '/api/public/spotify/callback'
+    | '/api/public/weather-webhook/$token'
     | '/api/public/webhooks/banking'
     | '/console/apps'
     | '/console/apps/$appId/advanced'
@@ -1606,6 +1629,7 @@ export interface FileRouteTypes {
     | '/api_/public/integrations'
     | '/api_/public/proxy-image'
     | '/api_/public/stripe-webhook'
+    | '/api_/public/weather'
     | '/api_/spotify/start'
     | '/auth_/mastodon/callback'
     | '/r/u/$alias'
@@ -1635,6 +1659,7 @@ export interface FileRouteTypes {
     | '/api_/public/qr/upload'
     | '/api_/public/session/logout'
     | '/api_/public/spotify/callback'
+    | '/api_/public/weather-webhook/$token'
     | '/api_/public/webhooks/banking'
     | '/_authenticated/console/apps/'
     | '/_authenticated/console/apps/$appId/advanced'
@@ -1713,6 +1738,7 @@ export interface RootRouteChildren {
   ApiPublicIntegrationsRoute: typeof ApiPublicIntegrationsRoute
   ApiPublicProxyImageRoute: typeof ApiPublicProxyImageRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
+  ApiPublicWeatherRoute: typeof ApiPublicWeatherRoute
   ApiSpotifyStartRoute: typeof ApiSpotifyStartRoute
   AuthMastodonCallbackRoute: typeof AuthMastodonCallbackRoute
   RUAliasRoute: typeof RUAliasRoute
@@ -1736,6 +1762,7 @@ export interface RootRouteChildren {
   ApiPublicQrUploadRoute: typeof ApiPublicQrUploadRoute
   ApiPublicSessionLogoutRoute: typeof ApiPublicSessionLogoutRoute
   ApiPublicSpotifyCallbackRoute: typeof ApiPublicSpotifyCallbackRoute
+  ApiPublicWeatherWebhookTokenRoute: typeof ApiPublicWeatherWebhookTokenRoute
   ApiPublicWebhooksBankingRoute: typeof ApiPublicWebhooksBankingRoute
   ApiPublicBookingsIdActionRoute: typeof ApiPublicBookingsIdActionRoute
 }
@@ -2365,6 +2392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api_/public/weather': {
+      id: '/api_/public/weather'
+      path: '/api/public/weather'
+      fullPath: '/api/public/weather'
+      preLoaderRoute: typeof ApiPublicWeatherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api_/spotify/start': {
       id: '/api_/spotify/start'
       path: '/api/spotify/start'
@@ -2566,6 +2600,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/spotify/callback'
       fullPath: '/api/public/spotify/callback'
       preLoaderRoute: typeof ApiPublicSpotifyCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api_/public/weather-webhook/$token': {
+      id: '/api_/public/weather-webhook/$token'
+      path: '/api/public/weather-webhook/$token'
+      fullPath: '/api/public/weather-webhook/$token'
+      preLoaderRoute: typeof ApiPublicWeatherWebhookTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api_/public/webhooks/banking': {
@@ -2948,6 +2989,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicIntegrationsRoute: ApiPublicIntegrationsRoute,
   ApiPublicProxyImageRoute: ApiPublicProxyImageRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
+  ApiPublicWeatherRoute: ApiPublicWeatherRoute,
   ApiSpotifyStartRoute: ApiSpotifyStartRoute,
   AuthMastodonCallbackRoute: AuthMastodonCallbackRoute,
   RUAliasRoute: RUAliasRoute,
@@ -2972,6 +3014,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicQrUploadRoute: ApiPublicQrUploadRoute,
   ApiPublicSessionLogoutRoute: ApiPublicSessionLogoutRoute,
   ApiPublicSpotifyCallbackRoute: ApiPublicSpotifyCallbackRoute,
+  ApiPublicWeatherWebhookTokenRoute: ApiPublicWeatherWebhookTokenRoute,
   ApiPublicWebhooksBankingRoute: ApiPublicWebhooksBankingRoute,
   ApiPublicBookingsIdActionRoute: ApiPublicBookingsIdActionRoute,
 }
