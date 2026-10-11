@@ -5,6 +5,76 @@
  * geen extra request, geen tracking, geen serveropslag.
  */
 
+export type VCardPhoneType = "work" | "cell" | "home";
+export type VCardPhone = { type: VCardPhoneType; number: string };
+
+/** Instellingen van het "vCard / Visitekaartje"-component (JSON in block.value). */
+export interface VCardConfig {
+  label: string;
+  title: string;
+  org: string;
+  phones: VCardPhone[];
+  address: string;
+  birthday: string;
+  note: string;
+  /** Notitie = bio van het profiel op het moment van downloaden. */
+  noteUseBio: boolean;
+  /** Leeg = het ROUT-profiel. */
+  urlOverride: string;
+  includeAvatar: boolean;
+  includeEmail: boolean;
+  includeLinks: boolean;
+}
+
+export const DEFAULT_VCARD_CONFIG: VCardConfig = {
+  label: "",
+  title: "",
+  org: "",
+  phones: [],
+  address: "",
+  birthday: "",
+  note: "",
+  noteUseBio: false,
+  urlOverride: "",
+  includeAvatar: true,
+  includeEmail: true,
+  includeLinks: true,
+};
+
+const str = (v: unknown, max: number) => (typeof v === "string" ? v.slice(0, max) : "");
+
+export function parseVCardConfig(raw: string | null | undefined): VCardConfig {
+  let r: Record<string, unknown> = {};
+  try {
+    r = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
+  } catch {
+    r = {};
+  }
+  if (!r || typeof r !== "object") r = {};
+  const phones = Array.isArray(r["phones"]) ? (r["phones"] as unknown[]) : [];
+  const bool = (k: keyof VCardConfig) => (r[k] === undefined ? (DEFAULT_VCARD_CONFIG[k] as boolean) : Boolean(r[k]));
+  return {
+    label: str(r["label"], 40),
+    title: str(r["title"], 80),
+    org: str(r["org"], 80),
+    phones: phones
+      .filter((p): p is Record<string, unknown> => !!p && typeof p === "object")
+      .map((p) => ({
+        type: (["work", "cell", "home"].includes(String(p["type"])) ? p["type"] : "cell") as VCardPhoneType,
+        number: str(p["number"], 40),
+      }))
+      .slice(0, 5),
+    address: str(r["address"], 200),
+    birthday: /^\d{4}-\d{2}-\d{2}$/.test(String(r["birthday"] ?? "")) ? String(r["birthday"]) : "",
+    note: str(r["note"], 300),
+    noteUseBio: bool("noteUseBio"),
+    urlOverride: /^https?:\/\//i.test(String(r["urlOverride"] ?? "")) ? str(r["urlOverride"], 300) : "",
+    includeAvatar: bool("includeAvatar"),
+    includeEmail: bool("includeEmail"),
+    includeLinks: bool("includeLinks"),
+  };
+}
+
 export interface VCardInput {
   handle: string;
   displayName?: string | null;
@@ -17,6 +87,16 @@ export interface VCardInput {
   phone?: string | null;
   org?: string | null;
   profileUrl: string;
+  /** Functietitel (TITLE). */
+  title?: string | null;
+  /** Gecategoriseerde nummers; wint van `phone`. */
+  phones?: VCardPhone[];
+  /** Vrij adres als één regel (ADR, straat-veld). */
+  address?: string | null;
+  /** YYYY-MM-DD. */
+  birthday?: string | null;
+  /** Expliciete notitie; wint van tagline/bio. */
+  note?: string | null;
   /** Extra URL's (socials, website) die in de contactkaart terechtkomen. */
   links?: { label: string; url: string }[];
 }
@@ -40,7 +120,12 @@ function nameField(full: string): string {
 
 export function buildVCard(input: VCardInput): string {
   const name = (input.displayName || `@${input.handle}`).trim();
-  const note = (input.tagline || input.bio || "").trim();
+  const note = (input.note ?? input.tagline ?? input.bio ?? "").trim();
+  const phones: VCardPhone[] = input.phones?.length
+    ? input.phones.filter((p) => p.number.trim())
+    : input.phone?.trim()
+      ? [{ type: "cell", number: input.phone.trim() }]
+      : [];
   const lines = [
     "BEGIN:VCARD",
     "VERSION:3.0",
@@ -49,8 +134,11 @@ export function buildVCard(input: VCardInput): string {
     `NICKNAME:${esc(input.handle)}`,
     `URL:${esc(input.profileUrl)}`,
     ...(input.email ? [`EMAIL;TYPE=INTERNET:${esc(input.email)}`] : []),
-    ...(input.phone?.trim() ? [`TEL;TYPE=CELL:${esc(input.phone.trim())}`] : []),
+    ...phones.map((p) => `TEL;TYPE=${p.type.toUpperCase()}${p.type === "cell" ? ",VOICE" : ""}:${esc(p.number.trim())}`),
     ...(input.org?.trim() ? [`ORG:${esc(input.org.trim())}`] : []),
+    ...(input.title?.trim() ? [`TITLE:${esc(input.title.trim())}`] : []),
+    ...(input.address?.trim() ? [`ADR;TYPE=WORK:;;${esc(input.address.trim())};;;;`] : []),
+    ...(input.birthday && /^\d{4}-\d{2}-\d{2}$/.test(input.birthday) ? [`BDAY:${input.birthday}`] : []),
     ...(input.photoBase64
       ? [`PHOTO;ENCODING=b;TYPE=JPEG:${input.photoBase64}`]
       : input.avatarUrl?.startsWith("http")
