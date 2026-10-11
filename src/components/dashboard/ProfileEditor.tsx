@@ -134,6 +134,7 @@ import { withAuthTimeout, authFailureMessage } from "@/lib/auth-timeout";
 import { oauthAvatarOf } from "@/lib/oauth-avatar";
 import { BlueskyWizard } from "@/components/dashboard/BlueskyWizard";
 import { LiveStatusAccordion } from "@/components/studio/LiveStatusAccordion";
+import { ShareMenu } from "@/components/profile/ShareMenu";
 import { IntegrationsAccordion } from "@/components/studio/IntegrationsAccordion";
 
 export type ProfileVariant = "verified" | "alias";
@@ -793,6 +794,14 @@ export function ProfileEditor({ variant = "verified" }: { variant?: ProfileVaria
           >
             {verified ? "Pro" : "Free"}
           </span>
+          <ShareMenu
+            url={typeof window === "undefined" ? `https://rout.be${publicPath}` : new URL(publicPath, window.location.origin).toString()}
+            handle={claimed ?? ""}
+            name={displayName}
+            bio={tagline}
+            avatarUrl={avatarUrl}
+            showNfc
+          />
           <a
             href={publicPath}
             target="_blank"

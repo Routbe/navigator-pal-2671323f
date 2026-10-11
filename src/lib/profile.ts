@@ -792,6 +792,12 @@ export const BLOCK_KINDS: {
     placeholder: "Welk project moet ik eerst bouwen?",
   },
   {
+    kind: "vcard",
+    label: "vCard / Visitekaartje",
+    category: "contact",
+    placeholder: "Contact opslaan",
+  },
+  {
     kind: "faq_accordion",
     label: "FAQ / Veelgestelde vragen",
     category: "layout",
@@ -1216,6 +1222,7 @@ export function blockHref(block: ProfileBlock): string {
     case "contact_form":
     case "live_poll":
     case "faq_accordion":
+    case "vcard":
     case "map_embed":
     case "event_list":
       return "";
@@ -1246,6 +1253,7 @@ export const isWidgetBlock = (kind: string) =>
   kind === "contact_form" ||
   kind === "live_poll" ||
   kind === "faq_accordion" ||
+  kind === "vcard" ||
   kind === "map_embed" ||
   kind === "event_list";
 

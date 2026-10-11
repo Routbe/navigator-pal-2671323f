@@ -39,6 +39,7 @@ import {
   PollBlockSettings,
 } from "@/components/dashboard/InteractionBlockSettings";
 import type { QuickCreateOption } from "@/types/profile-editor";
+import { VCardBlockSettings } from "@/components/dashboard/VCardBlockSettings";
 
 interface ProfileLinksManagerProps {
   blocks: ProfileBlock[];
@@ -296,6 +297,12 @@ export function ProfileLinksManager({
                     />
                   ) : b.kind === "live_poll" ? (
                     <PollBlockSettings
+                      value={b.value}
+                      onChange={(value) => patch(b.id, { value })}
+                      onTitle={(label) => patch(b.id, { label })}
+                    />
+                  ) : b.kind === "vcard" ? (
+                    <VCardBlockSettings
                       value={b.value}
                       onChange={(value) => patch(b.id, { value })}
                       onTitle={(label) => patch(b.id, { label })}

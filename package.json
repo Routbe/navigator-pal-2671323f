@@ -85,6 +85,7 @@
     "embla-carousel-react": "^8.6.0",
     "i18next": "^26.3.6",
     "input-otp": "^1.4.2",
+    "jspdf": "^4.2.1",
     "jszip": "^3.10.1",
     "lucide-react": "^0.575.0",
     "media-chrome": "^4.19.1",
