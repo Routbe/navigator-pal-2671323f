@@ -82,7 +82,7 @@ import {
 } from "@/lib/visit-effects";
 import { AvatarFrameWrapper } from "@/components/profile/AvatarFrameWrapper";
 import { StatusBubble } from "@/components/profile/StatusBubble";
-import { downloadVCard } from "@/lib/vcard";
+import { downloadVCard, parseVCardConfig } from "@/lib/vcard";
 import { profileText } from "@/lib/profile-i18n";
 
 import { useI18n } from "@/lib/i18n";
@@ -498,7 +498,7 @@ export function ProfileView({
         )}
 
         {/* vCard: bezoekers bewaren het profiel meteen in hun adresboek. */}
-        {prefs.showVcardButton && (
+        {prefs.showVcardButton && !blocks.some((b) => b.kind === "vcard") && (
           <button
             type="button"
 
@@ -602,6 +602,38 @@ export function ProfileView({
                   config={parsePollConfig(b.value)}
                   style={buttonStyle}
                 />
+              ) : b.kind === "vcard" ? (
+                <button
+                  key={b.id}
+                  type="button"
+                  onClick={() => {
+                    const c = parseVCardConfig(b.value);
+                    void downloadVCard({
+                      handle: profile.username ?? "",
+                      displayName: profile.display_name,
+                      tagline: profile.tagline,
+                      note: c.noteUseBio ? shownBio || profile.tagline || null : c.note.trim() || null,
+                      avatarUrl: c.includeAvatar ? profile.avatar_url : null,
+                      email: c.includeEmail ? aliasEmail : null,
+                      phones: c.phones,
+                      org: c.org,
+                      title: c.title,
+                      address: c.address,
+                      birthday: c.birthday,
+                      profileUrl:
+                        c.urlOverride ||
+                        (typeof window === "undefined" ? `https://rout.be/${profile.username ?? ""}` : window.location.origin + window.location.pathname),
+                      links: c.includeLinks
+                        ? blocks.filter((x) => /^https?:\/\//.test(blockHref(x))).map((x) => ({ label: x.kind, url: blockHref(x) }))
+                        : [],
+                    });
+                  }}
+                  className="flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-transform hover:-translate-y-px"
+                  style={buttonStyle}
+                >
+                  <UserPlus className="h-4 w-4" aria-hidden />
+                  {parseVCardConfig(b.value).label.trim() || profileText(locale, "saveContact")}
+                </button>
               ) : b.kind === "faq_accordion" ? (
                 <FaqCard key={b.id} config={parseFaqConfig(b.value)} style={buttonStyle} />
               ) : b.kind === "map_embed" ? (
