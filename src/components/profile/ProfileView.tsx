@@ -83,6 +83,7 @@ import {
 import { AvatarFrameWrapper } from "@/components/profile/AvatarFrameWrapper";
 import { StatusBubble } from "@/components/profile/StatusBubble";
 import { downloadVCard, parseVCardConfig } from "@/lib/vcard";
+import { ShareMenu } from "@/components/profile/ShareMenu";
 import { profileText } from "@/lib/profile-i18n";
 
 import { useI18n } from "@/lib/i18n";
@@ -295,6 +296,19 @@ export function ProfileView({
          fontSize: prefs.typographyCustom || prefs.customDesign ? `${prefs.fontScale}%` : undefined,
       }}
     >
+      {profile.username && (
+        <div className="absolute right-4 top-4 z-10">
+          <ShareMenu
+            url={typeof window === "undefined" ? `https://rout.be/${profile.username}` : window.location.origin + window.location.pathname}
+            handle={profile.username}
+            name={profile.display_name ?? ""}
+            bio={shownBio || profile.tagline}
+            avatarUrl={profile.avatar_url}
+            className="backdrop-blur"
+            style={{ borderColor: t.border, color: t.text, background: t.card }}
+          />
+        </div>
+      )}
       {/* Achtergrondafbeelding + verduistering blijven binnen deze pagina:
           blur werkt op de afbeelding zelf, nooit op wat erachter staat. */}
       {imageLayer && (
